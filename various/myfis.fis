@@ -1,0 +1,33 @@
+[System]
+Name='myfis'
+Type='sugeno'
+Version=2.0
+NumInputs=1
+NumOutputs=1
+NumRules=3
+AndMethod='prod'
+OrMethod='probor'
+ImpMethod='prod'
+AggMethod='sum'
+DefuzzMethod='wtaver'
+
+[Input1]
+Name='input1'
+Range=[5000 45000]
+NumMFs=3
+MF1='mf1':'trapmf',[-10000 0 10000 18000]
+MF2='mf2':'trapmf',[10000 18000 18000 40000]
+MF3='mf3':'trapmf',[18000 40000 60000 60000]
+
+[Output1]
+Name='output1'
+Range=[0 1]
+NumMFs=3
+MF1='mf1':'linear',[-2.16e-05 0.332]
+MF2='mf2':'linear',[-4.33e-06 0.113]
+MF3='mf3':'linear',[-3.62e-07 0.0191]
+
+[Rules]
+1, 1 (1) : 1
+2, 2 (1) : 1
+3, 3 (1) : 1

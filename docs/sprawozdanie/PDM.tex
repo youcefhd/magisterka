@@ -1,0 +1,487 @@
+\documentclass[a4paper,12pt,titlepage]{article}
+\usepackage[MeX]{polski}
+\usepackage[utf8]{inputenc}
+\usepackage[top=18mm, right=25mm, left=25mm, bottom=30mm]{geometry}
+\usepackage{verbatim}
+\usepackage{graphics}
+\usepackage{pstricks}
+\usepackage{pst-plot}
+\usepackage{pst-node}
+\author{Stanisław Swianiewicz}
+\title{PDM - 1\linebreak Sprawozdanie}
+\date{ }
+\bibliographystyle{plain}
+
+\newenvironment{mypicture}[3][h]{\begin{figure}[#1]\centering\resizebox{#2}{!}{\includegraphics{#3}}}{\end{figure}}
+
+\newcommand{\x}{\ensuremath{\mathbf{x}}}
+\newcommand{\C}{\ensuremath{\mathcal{C}}}
+
+\begin{document}
+\begin{titlepage}
+
+\vfill
+\vspace*{1cm}
+    \begin{center}\small
+    Politechnika Warszawska\\
+    Wydział Elektroniki i Technik Informacyjnych\\
+    \end{center}
+    \vspace{3cm}
+    \noindent
+    \begin{center}
+      \LARGE \textsc{Metody identyfikacji i dostrajania \\ modeli rozmytych} \\
+      \vspace{0.5cm}
+      \Large \textsc{Sprawozdanie z PDM-1}
+         \end{center}
+    \vspace{0.5cm}
+    \begin{minipage}{5cm}
+    \textit{\small Autor:}\\
+    \normalsize Stanisław Swianiewicz 
+    \end{minipage}
+    \hspace{7cm}
+    \begin{minipage}{5cm}
+    \textit{\small Opiekun naukowy:}\\
+    \normalsize dr inż. Piotr Marusak 
+    \end{minipage}
+    \vspace*{\stretch{6}}
+    \begin{center}
+    styczeń 2011
+    \end{center}
+
+\end{titlepage}
+
+\section{Modele rozmyte Takagi-Sugeno-Kanga}
+
+W logice klasycznej zadanie ,,element $p$ należy do zbioru $P$'' może przyjmować dwie wartości logiczne, prawdę lub fałsz. Logika rozmyta jest uogólnieniem logiki klasycznej zaproponowanym przez Lofti Zadeha. Polega ono wprowadzeniu dodatkowych poziomów ,,prawdziwości''. W logice rozmytej każdy zbiór określony jest tzw.\ funkcją przynależności przyporządkowującą każdemu elementowi przestrzeni liczbę z przedziału $[0\quad 1]$. Wartości 0 i 1 odpowiadają sytuacji znanej z logiki klasycznej czyli całkowitego należenia do zbioru lub całkowitego nienależenia do zbioru. Sytuacje pośrednie określa się mianem należenia do zbioru ze stopniem przynależności (stopień przynależności odpowiada wartości funkcji przynależności do danego zbioru). W logice rozmytej zbiory, których funkcja przynależności może przyjmować tylko dwie wartości: 0 i 1, określa się mianem zbiorów ostrych (odpowiedniki zbiorów z logiki klasycznej), natomiast zbiory, dla których przyjmowana może być dowolna wartość z przedziału $[0\quad 1]$, określane są jako zbiory rozmyte. Rysunki \ref{2-ex1} i \ref{2-ex2} przedstawiają przykładowe wykresy funkcji przynależności do zbioru rozmytego oraz ostrego.
+
+\begin{figure}[h]
+\centering
+    \resizebox{.85\textwidth}{!}{
+    \begin{pspicture}(12,7)
+    %\psgrid
+    \rput[lb](1,1){
+        %\psgrid
+        \psaxes[labels=none, ticks=none]{->}(0,0)(0,0)(10,5)
+        \psline[linewidth=0.01]{-}(2,0)(4,4)(6,4)(8,4)(9,0)
+        \Rput[b](7,4){$\mu_{A_1}$}
+        \Rput[r](-0.2,4){1}
+        \Rput[tr](-0.2,0){0}
+        \Rput[tr](10,0){$x$}
+    }
+    \end{pspicture}
+    }
+\caption{Wykres przykładowej funkcji przynależności do zbioru rozmytego $A_1$}
+\label{2-ex1}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+    \resizebox{.85\textwidth}{!}{
+    \begin{pspicture}(12,7)
+    %\psgrid
+    \rput[lb](1,1){
+        %\psgrid
+        \psaxes[labels=none, ticks=none]{->}(0,0)(0,0)(10,5)
+        \psline[linewidth=0.01]{-}(4,0)(4,4)(8,4)(8,0)
+        \Rput[b](7,4){$\mu_{A_2}$}
+        \Rput[r](-0.2,4){1}
+        \Rput[tr](-0.2,0){0}
+        \Rput[tr](10,0){$x$}
+    }
+    \end{pspicture}
+    }
+\caption{Wykres przykładowej funkcji przynależności do zbioru ostrego $A_2$}
+\label{2-ex2}
+\end{figure}
+
+Innym ważnym elementem logiki rozmytej jest pojęcie \textit{zmiennej lingwistycznej}. Zmienna lingwistyczna może przyjmować określone wartości zdefiniowane poprzez zbiory rozmyte. Przykładową zmienną może być ,,wzrost'', który może być ,,niski'', ,,średni'' lub ,,wysoki'' z odpowiednimi współczynnikami przynależności. W logice rozmytej można wypowiedzieć zdanie: ,,Osoba X ma wzrost średni ze współczynnikiem przynależności 0.8 i wysoki ze współczynnikiem 0.2''.
+
+Podstawowym elementem systemu rozmytego jest zbiór reguł czyli \textit{baza wiedzy}. Każda reguła opisuje wyjście systemu w zależności od przynależności wejść do poszczególnych zbiorów rozmytych. Systemy rozmyte Takagi-Sugeno składają się z reguł następującej postaci:
+\begin{equation}
+\mathrm{R}^i:\mbox{JEŚLI $x_1$ jest $A_1^i$ i $x_2$ jest $A_2^i$ i $\cdots$ i $x_n$ jest $A_n^i$}
+\mbox{TO: $y^i=f^i(x_1, x_2, \ldots , x_n)$} 
+\label{reguly}
+\end{equation}
+
+Część formuły poprzedzona słowem ,,JEŚLI'' nazywana jest poprzednikiem reguły, a poprzedzona słowem ,,TO'' następnikiem. Jeżeli funkcje $f^i$ następników reguł są funkcjami liniowymi to system rozmyty jest systemem Takagi-Sugeno-Kanga.
+
+Wnioskowanie rozmyte w systemie typu TSK polega na wyznaczeniu poziomów aktywacji $w^i$ wszystkich reguł dla danego wektora $x$, a następnie obliczeniu konkluzji finalnej. Wyznaczenie poziomów aktywacji reguł najczęściej odbywa się poprzez obliczenie iloczynu lub minimum współczynników przynależności do zbiorów $A^i$. Konkluzja finalna wyznaczana jest ze wzoru:
+\begin{equation}
+y = \frac{\sum_{i=1}^r w^i(x)y^i}{\sum_{l=1}^r w^l(x)}
+\label{wzor1}
+\end{equation}
+
+\section{Strojenie modeli neuronowo-rozmytych}
+
+System rozmyty Takagi-Sugeno-Kanga może być przedstawiony w postaci sieci neuronowej, zwanej rozmytą siecią neuronową lub systemem neuronowo-rozmytym. Sposób przekształcenia systemu TSK w rozmytą sieć neuronową przedstawiony zostanie na przykładzie prostego systemu o dwóch wejściach. Przestrzeń każdego z dwóch wejść podzielona została na dwa zbiory rozmyte, a wyjście systemu opisane zostało za pomocą czterech reguł postaci:
+
+\begin{displaymath}
+\begin{array}{l}
+\mathrm{R}^1:\mbox{ JEŚLI } x_1 \mbox{ jest } X_{11} \mbox{ i } x_2 \mbox{ jest } X_{21} \mbox{ to } y^{11}=f_{11}(x) \\
+\mathrm{R}^2:\mbox{ JEŚLI } x_1 \mbox{ jest } X_{11} \mbox{ i } x_2 \mbox{ jest } X_{22} \mbox{ to } y^{12}=f_{12}(x) \\
+\mathrm{R}^3:\mbox{ JEŚLI } x_1 \mbox{ jest } X_{12} \mbox{ i } x_2 \mbox{ jest } X_{21} \mbox{ to } y^{21}=f_{21}(x) \\
+\mathrm{R}^4:\mbox{ JEŚLI } x_1 \mbox{ jest } X_{12} \mbox{ i } x_2 \mbox{ jest } X_{22} \mbox{ to } y^{22}=f_{22}(x) \\
+\end{array}
+\end{displaymath}
+
+Na rys. \ref{rys1} przedstawiono funkcje przynależności do poszczególnych zbiorów rozmytych oraz symboliczny wykres wartości wyjścia systemu w zależności od wartości wejść.
+\begin{figure}[h]
+  \resizebox{\textwidth}{!}{
+      \begin{pspicture}(12,7)
+          \rput(0.5,0.5){
+          %\psgrid
+          \psaxes[labels=none, ticks=none]{->}(3,3)(3,3)(10,6)
+          \psaxes[labels=none, ticks=none]{->}(3,2)(3,2)(10,0)
+          \psaxes[labels=none, ticks=none]{->}(2,3)(2,3)(0,6)
+          \psline{-}(2.8,0.2)(6,0.2)(7,2)
+          \psline{-}(6,2)(7,0.2)(10,0.2)
+          \psline{-}(0.2,2.8)(0.2,4)(2,5)
+          \psline{-}(2,4)(0.2,5)(0.2,6)
+          \psline[linewidth=0.01, linestyle=dashed]{-}(6,0)(6,6)
+          \psline[linewidth=0.01, linestyle=dashed]{-}(7,0)(7,6)
+          \psline[linewidth=0.01, linestyle=dashed]{-}(0,4)(10,4)
+          \psline[linewidth=0.01, linestyle=dashed]{-}(0,5)(10,5)
+          \Rput[r](10,2.5){$x_1$}
+          \Rput[t](2.5,6){$x_2$}
+          \Rput[c](2.5,2.5){$0$}
+          \Rput[b](2.5,0){$1$}
+          \Rput[l](0,2.5){$1$}
+          \Rput[b](4.5,0.2){$\mu _{X_{11}}(x_1)$}
+          \Rput[b](8.5,0.2){$\mu _{X_{12}}(x_1)$}
+          \Rput[l](0.2,3.5){$\mu _{X_{21}}(x_2)$}
+          \Rput[l](0.2,5.5){$\mu _{X_{22}}(x_2)$}
+          \Rput[c](4.5,3.5){$f_{11}(x)$}
+          \Rput[c](8.5,3.5){$f_{21}(x)$}
+          \Rput[c](4.5,5.5){$f_{12}(x)$}
+          \Rput[c](8.5,5.5){$f_{22}(x)$}
+          }
+      \end{pspicture}
+  }
+\caption{Wykresy funkcji przynależności do poszczególnych zbiorów rozmytych i zasięgi obowiązywania poszczególnych reguł wnioskowania}
+\label{rys1}
+\end{figure}
+
+Szczególnie interesujące są obszary, w których co najmniej jedna ze zmiennych wejściowych należy do więcej niż jednego ze zbiorów rozmytych. W obszarach tych wartość wyjścia zmienia się w sposób nieliniowy. Własność nieliniowej zależności wyjścia od wejść systemu TSK jest szczególnie atrakcyjna i jest powodem, dla którego systemy rozmyte często wykorzystywane są do modelowania skomplikowanych obiektów nieliniowych.
+
+\pagebreak
+Struktura rozmytej sieci neuronowej przedstawiona została na rysunku \ref{rys2}. Sieć ta składa się z sześciu warstw:
+\begin{itemize}
+\item Warstwa pierwsza odpowiada za obliczanie współczynników przynależności do poszczególnych zbiorów rozmytych.
+\item Warstwa druga odpowiada za obliczenie poziomów aktywacji poszczególnych reguł.
+\item Warstwa trzecia oblicza wartości funkcji $f_k(x)$.
+\item Warstwy czwarta, piąta i szósta odpowiadają za defuzyfikację czyli obliczenie konkluzji finalnej.
+\end{itemize}
+
+\begin{figure}[h]
+\resizebox{\textwidth}{!}{
+      \begin{pspicture}(18,12)
+          \rput(-1, 2){
+          %\psgrid
+          \rput[c](3, 4){\rnode{x1}{$x_1$}}
+          \rput[c](2, 0){\rnode{x2}{$x_2$}}
+          \rput[c](5, 5){\circlenode{m11}{$\mu _{X_{11}}$}}
+          \rput[c](5, 3){\circlenode{m12}{$\mu _{X_{12}}$}}
+          \rput[c](5, 1){\circlenode{m21}{$\mu _{X_{21}}$}}
+          \rput[c](5, -1){\circlenode{m22}{$\mu _{X_{22}}$}}
+          \ncline[nodesepA=3pt]{x1}{m11}
+          \ncline[nodesepA=3pt]{x1}{m12}
+          \ncline[nodesepA=3pt]{x2}{m21}
+          \ncline[nodesepA=3pt]{x2}{m22}
+          \rput[c](7, 5){\circlenode{w11}{$\prod$}}
+          \rput[c](7, 3){\circlenode{w12}{$\prod$}}
+          \rput[c](7, 1){\circlenode{w21}{$\prod$}}
+          \rput[c](7, -1){\circlenode{w22}{$\prod$}}
+          \ncline{m11}{w11}
+          \ncline{m11}{w12}
+          \ncline{m12}{w21}
+          \ncline{m12}{w22}
+          \ncline{m21}{w11}
+          \ncline{m21}{w21}
+          \ncline{m22}{w12}
+          \ncline{m22}{w22}
+          \rput[c](9, 9){\circlenode{f11}{$f_{11}$}}
+          \rput[c](9, 8){\circlenode{f12}{$f_{12}$}}
+          \rput[c](9, 7){\circlenode{f21}{$f_{21}$}}
+          \rput[c](9, 6){\circlenode{f22}{$f_{22}$}}
+          \pnode(7.5, 8.5){x2p}
+          \pnode(7.5, 6.5){x1p}
+          \ncangle[nodesepA=3pt, angle=90, armB=0]{x1}{x1p}
+          \ncangle[nodesepA=3pt, angle=90, armB=0]{x2}{x2p}
+          \ncline{x1p}{f11}
+          \ncline{x1p}{f12}
+          \ncline{x1p}{f21}
+          \ncline{x1p}{f22}
+          \ncline{x2p}{f11}
+          \ncline{x2p}{f12}
+          \ncline{x2p}{f21}
+          \ncline{x2p}{f22}
+          \rput[c](12, 5.5){\circlenode{y11}{$\prod$}}
+          \rput[c](12, 4){\circlenode{y12}{$\prod$}}
+          \rput[c](12, 2.5){\circlenode{y21}{$\prod$}}
+          \rput[c](12, 1){\circlenode{y22}{$\prod$}}
+          \rput[c](12, -1){\circlenode{sum}{$\sum$}}
+          \ncline{w11}{y11}
+          \ncline{w12}{y12}
+          \ncline{w21}{y21}
+          \ncline{w22}{y22}
+          \ncline{f11}{y11}
+          \ncline{f12}{y12}
+          \ncline{f21}{y21}
+          \ncline{f22}{y22}
+          \ncline{w11}{sum}
+          \ncline{w12}{sum}
+          \ncline{w21}{sum}
+          \ncline{w22}{sum}
+          \rput[c](14, 3.25){\circlenode{wyn1}{$\sum$}}
+          \ncline{y11}{wyn1}
+          \ncline{y12}{wyn1}
+          \ncline{y21}{wyn1}
+          \ncline{y22}{wyn1}
+          \rput[c](16, 3.25){\circlenode{wyn2}{$/$}}
+          \ncline{wyn1}{wyn2}
+          \ncline{sum}{wyn2}
+          \rput[c](18, 3.25){\rnode{y}{$y$}}
+          \ncline[nodesepB=3pt]{->}{wyn2}{y}
+          }
+    \end{pspicture}
+}
+\caption{Reprezentacja przykładowego systemu TSK w postaci rozmytej sieci neuronowej}
+\label{rys2}
+\end{figure}
+
+Do strojenia przedstawionej sieci neuronowo-rozmytej wykorzystywane mogą być standardowe algorytmy wykorzystywane w uczeniu jednokierunkowych wielowarstwowych sieci neuronowych. W prezentowanym przykładzie wykorzystane zostały trapezowe funkcje przynależności, które nie są różniczkowalne. Podczas konstruowania modeli rozmytym0ch mających podlegać strojeniu częściej wykorzystuje się funkcje różniczkowalne, np.\ uogólnioną funkcję Gaussa opisywaną wzorem:
+
+\begin{equation}
+\mu _A (x) = \frac{1}{1 + | \frac{x - c}{\delta} | ^{2b}}
+\end{equation}
+
+Wykorzystanie różniczkowalnych funkcji przynależności oraz iloczynu jako operatora minimum zapewnia różniczkowalność sieci neuronowej i pozwala na wykorzystanie metody wstecznej propagacji błędów do strojenia parametrów funkcji przynależności.
+
+Ponieważ w systemach TSK, funkcje następników są liniowe, wykorzystać można algorytm hybrydowy uczenia sieci neuronowo-rozmytej. W metodzie tej następniki strojone są metodą najmniejszych kwadratów, a poprzedniki metodą wstecznej propagacji błędów.
+
+\subsection{Algorytm hybrydowy strojenia rozmytej sieci neuronowej typu TSK}
+
+Jak wspomniano wcześniej w algorytmie hybrydowym parametry dzieli się na dwie grupy: parametrów liniowych funkcji następników systemu TSK, oraz parametrów nieliniowych funkcji poprzedników systemu. Algorytm strojenia przebiega dwufazowo. W fazie pierwszej pierwszej dla ustalonych parametrów funkcji przynależności określa się parametry liniowe.
+
+Załóżmy, że funkcje liniowe następników są postaci:
+\begin{equation}
+f_{k}(\x ) = p_{k0} + \sum_{j=1}^{N}p_{kj}x_{j}
+\end{equation}
+gdzie $N$ określa ilość wejść systemu. Przy ustalonych parametrach funkcji przynależności wzór (\ref{wzor1}), można przedstawić w postaci:
+\begin{equation}
+y(\x ) = \sum_{k=1}^{M} w'_{k}(p_{k0} + \sum_{j=1}^{N}p_{kj}x_{j})
+\end{equation}
+Liczba $M$ określa liczbę reguł systemu a $w'_{k}$ to unormowane poziomy aktywacji reguł określone wzorem:
+\begin{equation}
+w'_{k} = \frac{w_k}{\sum_{r=1}^{M}w_r}
+\end{equation}
+Jeżeli dysponujemy $D$ próbkami uczącymi postaci $(\mathbf{x}^{(l)}, d^{(l)})$, dla $l=1,\ldots,D$, zależy nam na takim doborze parametrów $p_{kj}$, żeby wektor $\mathbf{\hat{y}}$ określony wzorem:
+\begin{equation}
+\mathbf{\hat{y}} = 
+\left[ \begin{array}{c}
+y^{(1)} \\ y^{(2)} \\ \vdots \\ y^{(D)}
+\end{array} \right]
+= \mathbf{A}\mathbf{p}
+\end{equation}
+był jak najbliższy wektorowi wartości zadanych $\mathbf{d}$. $y^{(l)}$ to wyjście systemu przy prezentacji próbki $l$-tej, a macierz $\mathbf{A}$ i wektor $\mathbf{p}$ są określone wzorami:
+\begin{equation}
+\begin{array}{c}
+\mathbf{A} = 
+\left[
+\begin{array}{ccccccccc}
+w'^{(1)}_1 & w'^{(1)}_1x_1^{(1)} & \cdots & w'^{(1)}_1x_N^{(1)} & \cdots & w'^{(1)}_M & w'^{(1)}_Mx_1^{(1)} & \cdots & w'^{(1)}_Mx_N^{(1)} \\
+w'^{(2)}_1 & w'^{(2)}_1x_1^{(2)} & \cdots & w'^{(2)}_1x_N^{(2)} & \cdots & w'^{(2)}_M & w'^{(2)}_Mx_1^{(2)} & \cdots & w'^{(2)}_Mx_N^{(2)} \\
+\vdots & \vdots & \ddots & \vdots & \ddots & \vdots & \vdots & \ddots & \vdots \\
+w'^{(D)}_1 & w'^{(D)}_1x_1^{(D)} & \cdots & w'^{(D)}_1x_N^{(D)} & \cdots & w'^{(D)}_M & w'^{(D)}_Mx_1^{(D)} & \cdots & w'^{(D)}_Mx_N^{(D)} \\
+\end{array}\right], \\ \\
+\mathbf{p} = [p_{10} \cdots p_{1N} \cdots p_{M0} \cdots p_{MN}]^{\mathrm{T}}
+\end{array}
+\end{equation}
+gdzie $w'^{(l)}_k$ oznacza unormowany poziom aktywacji reguły $k$-tej przy prezentacji próbki $l$-tej.  Rozwiązanie takiego zadania można otrzymać poprzez pseudoinwersję macierzy $\mathbf{A}$ --- wtedy optymalny wektor parametrów $p_{kj}$ opisywany jest wzorem:
+\begin{equation}
+\mathbf{p} = \mathbf{A}^{+}\mathbf{d}
+\end{equation}
+
+W etapie drugim, po ustaleniu liniowych parametrów systemu TSK, obliczane są wartości wyjścia systemu dla kolejnych próbek uczących, a następnie wartość błędu \hbox{$\varepsilon ^{(l)} = y^{(l)} - d^{(l)}$}. Wartości błędu przepuszcza się przez sieć dołączoną wykonując algorytm propagacji wstecznej. Po wyznaczeniu gradientu funkcji celu $E$:
+\begin{equation}
+E = \frac{1}{2}\sum_{l=1}^{D}(y(\mathbf{x}^{(l)} - d^{(l)})^2
+\end{equation}
+względem parametrów funkcji przynależności aktualizacja parametrów odbywa się jedną z gradientowych metod uczenia. Dla najprostszej metody największego spadku, wzory na wartość parametrów $\xi _{ji}$ dla $j = 1,\ldots,N$ i $i$ określającego numer funkcji przynależności dla $j$-tego wejścia, w chwili $n+1$ przyjmują postać:
+\begin{equation}
+\xi _{ji}(n+1) = \xi _{ij}(n) - \eta \frac{\partial E(n)}{\partial \xi _{ji}}
+\end{equation}
+Wzory na gradient funkcji celu dla jednej próbki danych uczących przyjmują postać:
+\begin{equation}
+\frac{\partial E}{\partial \xi _{ji}} = (y(\mathbf{x} - d)\sum_{r=1}^M f_r(\mathbf{x})\frac{\partial w'_r}{\partial \xi _{ji}}
+\end{equation}
+Pochodne $\frac{\partial w'_r}{\partial \xi _{ji}}$ określone są wzorami:
+\begin{equation}
+\frac{\partial w'_r}{\partial \xi _{ji}} = \frac{\sum_{k=1}^M w_k - w_r}{(\sum_{k=1}^M w_k)^2} \prod_{k=1, k \neq j}^N [\mu _{ki}(x_k)] \quad \frac{\partial \mu _{ji} (x_j)}{\partial \xi _{ji}}
+\end{equation}
+gdy $i$-ty zbiór rozmyty znajduje się w poprzedniku $r$-tej reguły, w przeciwnym przypadku:
+\begin{equation}
+\frac{\partial w'_r}{\partial \xi _{ji}} = \frac{- w_r}{(\sum_{k=1}^M w_k)^2} \prod_{k=1, k \neq j}^N [\mu _{ki}(x_k)] \quad \frac{\partial \mu _{ji} (x_j)}{\partial \xi _{ji}}
+\end{equation}
+Dla wspomnianej wcześniej uogólnionej funkcji Gaussa, wektor pochodnych po parametrach wynosi:
+\begin{equation}
+\xi _{ji} = 
+\left[ \begin{array}{c}
+c_{ji} \\ \delta _{ji} \\ b_{ji}
+\end{array} \right],
+\frac{\partial \mu _{ji}}{\partial \xi _{ji}} = 
+\left[ \begin{array}{c}
+- \frac{\left(\frac{(c_{ji}-x_j)^2}{\delta _{ji}^2}\right)^{b_{ji}} \ln \left(\frac{(c_{ji}-x_j)^2}{\delta _{ji}^2}\right)}{\left(\left(\frac{(c_{ji}-x_j)^2}{\delta _{ji}^2}\right)^{b_{ji}} + 1\right)^2} \\
+
+\frac{2b_{ji}\left(\frac{(c_{ji} - x_{j})^2}{\delta _{ji}^2}\right)^{b_{ji}}}{g\left(\left(\frac{(c_{ji}-x_{j})^2}{\delta _{ji}^2}\right)^b + 1\right)^2} \\
+
+- \frac{2b_{ji}\left(\frac{(c_{ji} - x_j)^2}{\delta _{ji}^2}\right)^{b_{ji}}}{(c_{ji} - x_j)\left(\left(\frac{(c_{ji} - x_j)^2}{\delta _{ji}^2}\right)^{b_{ji}} + 1\right)^2}
+
+\end{array} \right]
+\end{equation}
+
+Ponieważ dominującym etapem strojenia jest etap pierwszy wykorzystujący metodę najmniejszych kwadratów, w praktycznej implementacji etap drugi --- metodę wstecznej propagacji błędów można wykonać kilkukrotnie w każdej iteracji działania algorytmu.
+
+Przedstawiony algorytm hybrydowy jest jednym z efektywniejszych algorytmów uczenia rozmytych sieci neuronowych. Ważną cechą jest podział parametrów dostrajanych modelu na dwie niezależne grupy. Złożoność obliczeniowa algorytmów optymalizacji jest zależna nieliniowo od liczby parametrów --- zmniejszenie wymiarowości zadania może znacząco wpływać na czas trwania obliczeń.
+
+\section{Algorytmy ewolucyjne w strojeniu modeli rozmytych}
+
+Innym podejściem do strojenia systemów rozmytych jest wykorzystanie algorytmów ewolucyjnych. Algorytmy ewolucyjne inspirowane są procesami zachodzącymi podczas ewolucji żywych organizmów --- symulują procesy doboru naturalnego i mutacji występujące wśród osobników należących do populacji. Działanie algorytmów ewolucyjnych zazwyczaj odbywa się w następujących fazach:
+\begin{enumerate}
+\item Inicjacja --- stworzenie początkowej populacji osobników.
+\item Reprodukcja --- stworzenie na bazie dostępnej populacji osobników rodzicielskich nowej populacji osobników potomnych.
+\item Mutacja --- Wprowadzenie losowych zmian do cech osobników.
+\item Ocena i sukcesja --- Wybór lub wylosowanie osobników, które stworzą nową populację osobników rodzicielskich.
+\end{enumerate}
+
+W dalszej części sprawozdania przedstawiony zostanie sposób w jaki algorytmy ewolucyjne mogą zostać wykorzystane do strojenia systemów rozmytych TSK.
+
+Osobniki będące szczególnymi realizacjami systemu rozmytego reprezentowane są w postaci chromosomów --- których składowe odpowiadają dostrajalnym parametrom systemu:
+\begin{equation}
+\C _i^{(l)} = [\xi _i^{(l)} \mathbf{p}_i^{(l)}]
+\end{equation}
+gdzie $\xi _i^{(l)}$ jest wektorem wszystkich parametrów poprzedników $i$-tego osobnika w $l$-tej iteracji, a $p_i^{(l)}$ analogicznym wektorem parametrów następników. Aby możliwe było wykorzystanie algorytmów ewolucyjnych, każda ze składowych chromosomu powinna być ograniczona. Ponieważ składowe wektora $p_i$ są współczynnikami funkcji liniowych, mogą przyjmować dowolne wartości z przedziału $(-\infty , \infty)$. W celu wprowadzenia ograniczeń stosuje się tzw.\ reprezentację kątową --- w operacjach wykonywanych na chromosomach wykorzystuje się wartość $\tilde{p}_{ij} = \arc \tg p_{ij}$. Takie postępowanie umożliwia wprowadzenie ograniczenie parametrów $\tilde{p}_{ij}$ do przedziału $(-\frac{\pi}{2} \quad \frac{\pi}{2}$). Wektory  wykorzystywanych ograniczeń dolnych i górnych oznaczane są jako $\C ^{\mathrm{min}}$ i $\C ^{\mathrm{max}}$.
+
+Aby stworzyć populację początkową, należy wylosować odpowiednią liczbę osobników z dozwolonego obszaru. Ponieważ najczęściej posiadamy system rozmyty, który chcemy dostroić, w populacji początkowej można umieścić osobniki odpowiadające posiadanemu wcześniej systemowi.
+
+W etapie reprodukcji wybiera się pary osobników, a następnie wykorzystuje się max-min-arytmetyczną metodę krzyżowania. Z każdej pary osobników rodzicielskich $\C _r^{(l)}$ i $\C _s^{(l)}$ tworzone są cztery osobniki potomne:
+\begin{equation}
+\begin{array}{l}
+\C _1^{(l+1)} = a\C _r^{(l)} + (1-a)\C _s^{(l)} \\
+\C _2^{(l+1)} = (1-a)\C _r^{(l)} + a\C _s^{(l)} \\
+\C _3^{(l+1)} = \mathrm{min}(\C _r^{(l)}, \C _s^{(l)}) \\
+\C _4^{(l+1)} = \mathrm{max}(\C _r^{(l)}, \C _s^{(l)}) \\
+\end{array}
+\end{equation}
+Osobniki rodzicielskie mogą być wybierane do reprodukcji na przykład metodą ruletki, w której prawdopodobieństwo wyboru osobnika jest proporcjonalne do jego współczynnika dopasowania (w naszym wypadku wartości kwadratowej funkcji celu na zbiorze danych uczących).
+
+Podczas mutacji wybrany osobnik przekształcany jest przy wykorzystaniu operacji mutacji nierównomiernej. Element chromosomu $\C _r^{(l)}$ -- $c _{ri}^{(l)}$ przekształcany jest według wzoru:
+\begin{equation}
+c_{ri}^{(l+1)} = \left\{
+\begin{array}{l}
+c_{ri}^{(l)} + \Delta (l, c_i^{\mathrm{max}} - c_{ri}^{(l)}),\mbox{ gdy }b = 0 \\
+c_{ri}^{(l)} - \Delta (l, c_{ri}^{(l)} - c_i^{\mathrm{min}}) ,\mbox{ gdy }b = 1
+\end{array}
+\right.
+\end{equation}
+gdzie b jest liczbą losową mogącą przyjmować wartości $0$ lub $1$, a operator $\Delta(l, y)$ jest realizacją zmiennej losowej o zakresie $[0 \quad y]$.
+\begin{equation}
+\Delta(l, y) = y(1 - r^{(1 - \frac{l}{l_{\mathrm{max}}})^b})
+\end{equation}
+gdzie r jest liczbą losową z przedziału $[0 \quad 1]$, $l_{\mathrm{max}}$ jest maksymalną liczbą pokoleń, a $b > 0$ jest parametrem. Tak zdefiniowany operator w pierwszych pokoleniach zapewnia mutację równomierną, która przy wzrastającym $l$ staje się coraz bardziej nierównomierna. Taka własność prowadzi do szerokiego przeszukiwania przestrzeni parametrów przez populację w początkowych pokoleniach, a w końcowej fazie działania algorytmu prowadzi do przeszukiwania lokalnego.
+
+Podczas sukcesji możemy wykorzystywać jedną z dwóch strategii ewolucyjnych:
+\begin{itemize}
+\item $(\mu, \lambda)$ --- do sukcesji wybierane są najlepiej przystosowane osobniki z populacji potomnej.
+\item $(\mu + \lambda)$ --- do sukcesji wybierane są osobniki najlepiej przystosowane z populacji będącej sumą populacji rodzicielskiej i potomnej.
+\end{itemize}
+
+Algorytm ewolucyjny w strojeniu systemu rozmytego typu TSK, może być szybszy niż strojenie rozmytej sieci neuronowej w przypadku dużej ilości parametrów dostrajalnych. Przy dużej wymiarowości problemu algorytm propagacji wstecznej może działać bardzo wolno, a ilość obliczeń wykonywana przez algorytm ewolucyjny jest zależna liniowo od wymiarowości problemu.
+
+\section{Projekt narzędzia do strojenia modeli rozmytych}
+
+Do testowania i porównania przedstawionych powyżej metod strojenia modeli rozmytych stworzony zostanie program komputerowy, który będzie spełniał następujące warunki:
+\begin{itemize}
+\item Projekt będzie zawierał wygodne i uniwersalne API do tworzenia i strojenia modeli rozmytych.
+\item Program będzie umożliwiał dużą elastyczność w tworzeniu modeli --- zapewniał swobodę wyboru struktury i parametrów dostrajalnych systemu.
+\item Interfejs graficzny programu będzie oparty o przeglądarkę.
+\item Środowisko będzie umożliwiało eksport i import danych wykorzystywanych przez MATLAB Fuzzy Toolbox.
+\end{itemize}
+
+Stworzenie interfejsu opartego na przeglądarce internetowej umożliwi potencjalnym użytkownikom łatwe korzystanie z pakietu bez konieczności instalacji, która w przypadku pakietów obliczeniowych często jest dość trudnym zadaniem. Przeniesienie głównej części obliczeń na serwer umożliwi efektywne wykorzystanie systemu przez użytkowników posiadających komputery o mniejszych możliwościach obliczeniowych.
+
+\begin{figure}[h]
+\resizebox{\textwidth}{!}{
+    \begin{pspicture}(18,10)
+    %\psgrid
+    \psline[linearc=.5](14,5)(18,5)(18,1)(13,1)(13,5)(14,5)
+    \rput[bl](13.5,5.1){PRZEGLĄDARKA}
+    \rput[b](15.5,3.2){HTML5}
+    \rput[t](15.5,2.8){jQuery}
+    \psline[linearc=.5](2,9)(8,9)(8,1)(1,1)(1,9)(2,9)
+    \rput[bl](1.5,9.2){SERWER}
+    \psline(8,7)(4,7)(4,3)(8,3)
+    \rput[bl](4,7.2){Apache, mod\_wsgi}
+    \rput[c](6,5){Flask}
+    \psline(1.75,6)(2.25,6)(2.25,2.75)(1.75,2.75)(1.75,6)
+    \pscurve{->}(4,6)(2.25,6.5)(2,6)
+    \rput[t](2,2.75){pyfis}
+    \psline{->}(2.25,3.5)(4,5)
+    \psline{->}(4,4.5)(2.25,3)
+    \psline{->}(8,5.25)(13,3.25)
+    \psline{->}(13,2.75)(8,4.75)
+    \rput[c](10.5, 4){\psframebox*{JSON over HTTP}}
+    \end{pspicture}
+}
+\caption{Schemat działania projektowanego systemu pyfis}
+\label{schemat}
+\end{figure}
+
+Na rysunku \ref{schemat}. przedstawiony został poglądowy schemat tworzonego systemu pyfis. Interfejs użytkownika zostanie stworzony przy wykorzystaniu technologii HTML5 i biblioteki języka JavaScript -- jQuery. Po stronie serwera wykorzystany zostanie framework wybowy Flask wykorzystujący język Python. Komunikacja pomiędzy klientem a serwerem będzie odbywać się z wykorzystaniem formatu danych JSON, który jest prostu w obsłudze zarówno w języku JavaScript jak też w Pythonie. Ponieważ zadania obliczeniowe są zadaniami długotrwałymi, uruchamiane będą w osobnych wątkach. Do wykonywania obliczeń wykorzystywana będzie tworzona biblioteka pyfis, prezentowana w dalszej części sprawozdania.
+
+\subsubsection*{Interfejs programisty}
+W ramach projektu tworzona jest biblioteka pyfis. Jest to pakiet języka Python wykorzystujący środowiska przeznaczone do obliczeń numerycznych: NumPy i SciPy.
+
+Modele rozmyte tworzone są jako obiekty języka Python, co powoduje, że używanie ich staje się wyjątkowo proste. Procedury dostrajania modeli rozmytych operują na definiowanych przez programistę obiektach. Poniżej przedstawiono przykładowe wykorzystanie biblioteki:
+
+\verbatiminput{example.py}
+
+W powyższym przykładzie zdefiniowany został prosty model o dwóch wejściach, z których każde definiowane jest poprzez cztery zbiory rozmyte określone dzwonowymi funkcjami przynależności, oraz o szesnastu regułach wnioskowania. Następnie model został dostrojony poprzez wykonanie trzydziestu epok uczenia algorytmem hybrydowym z wykorzystaniem metody największego spadku. Aktualnie oprócz metody największego spadku zaimplementowana jest metoda Levenberga-Marquardta.
+
+\section{Opis przeprowadzonych eksperymentów}
+
+Aby zaprezentować działanie metody dostrajania modeli rozmytych metodą uczenia sieci neuronowych, wykorzystano stworzoną bibliotekę do aproksymacji funkcji:
+\begin{equation}
+f(x,y) = \frac{\sin(x)\sin(y)}{xy}
+\end{equation}
+
+W tym celu stworzono model rozmyty o dwóch wejściach. Przestrzeń każdej ze zmiennych wejściowych podzielono na cztery zbiory rozmyte określone funkcjami przynależności w postaci uogólnionych dzwonów Gaussa. Wyjście modelu określono za pomocą szesnastu reguł.
+
+Następnie wygenerowano 400 próbek uczących z przedziału $[-10\quad10]$ i zastosowano algorytm hybrydowy z metodą najmniejszego spadku.
+
+Rysunek \ref{fun}.\ przedstawia wykres aproksymowanej funkcji. Rysunek \ref{lsq}.\ przedstawia sposób działania modelu po dostrojeniu następników metodą najmniejszych kwadratów. Rysunek \ref{approx}.\ przedstawia wykres wyjścia modelu po wykonaniu trzydziestu epok uczenia algorytmem hybrydowym. Rysunek \ref{mem}.\ przedstawia porównanie funkcji przynależności przed i po dostrojeniu modelu. Rysunek \ref{error}.\ przedstawia wykres błędu aproksymacji.
+
+Jak widać na wykresach algorytm skutecznie dostraja model rozmyty typu TSK, już po trzydziestu epokach uczenia rozmytej sieci neuronowej osiągana jest dość dokładna aproksymacja zadanej funkcji.
+
+\begin{mypicture}[h]{\textwidth}{fig/fun.eps}
+\caption{Wykres aproksymowanej funkcji}
+\label{fun}
+\end{mypicture}
+\begin{mypicture}[p]{\textwidth}{fig/lsq.eps}
+\caption{Wyjście modelu po dostrojeniu następników metodą najmniejszych kwadratów}
+\label{lsq}
+\end{mypicture}
+\begin{mypicture}[p]{\textwidth}{fig/approx.eps}
+\caption{Wyjście modelu po 30 epokach uczenia algorytmem hybrydowym}
+\label{approx}
+\end{mypicture}
+\begin{mypicture}[p]{\textwidth}{fig/mem.eps}
+\caption{Porównanie funkcji przynależności przed i po strojeniu modelu algorytmem hybrydowym}
+\label{mem}
+\end{mypicture}
+\begin{mypicture}[p]{\textwidth}{fig/error.eps}
+\caption{Wykres błędu aproksymacji po strojeniu modelu algorytmem hybrydowym}
+\label{error}
+\end{mypicture}
+
+\end{document}
+

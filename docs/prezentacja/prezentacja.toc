@@ -1,0 +1,7 @@
+\beamer@endinputifotherversion {3.10pt}
+\beamer@sectionintoc {2}{Modelowanie rozmyte}{3}{0}{1}
+\beamer@sectionintoc {3}{Rozmyte sieci neuronowe}{6}{0}{2}
+\beamer@sectionintoc {4}{Algorytmy ewolucyjne w strojeniu modeli rozmytych}{12}{0}{3}
+\beamer@subsectionintoc {4}{1}{Podej\IeC {\'s}cie oparte na dyskretyzacji}{13}{0}{3}
+\beamer@subsectionintoc {4}{2}{Podej\IeC {\'s}cie z genotypem ci\IeC {\k a}g\IeC {\l }ym}{14}{0}{3}
+\beamer@sectionintoc {5}{Implementacja}{16}{0}{4}
