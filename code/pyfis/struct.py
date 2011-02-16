@@ -6,7 +6,7 @@ from numpy import *
 """ Module containing basic classes representing Takagi-Sugeno fuzzy
 interference system. """
 
-class Fis:
+class Fis(object):
     """Class representing fuzzy interference system"""
     
     def __init__(self, defuzzmethod="aver", funtype="lin"):
@@ -45,7 +45,7 @@ class Fis:
         return y
 
 
-class MemFunc:
+class MemFunc(object):
     """Abstract class representing membership function"""
 
     def __init__(self, params):
@@ -59,12 +59,12 @@ class MemFunc:
         """returns membership function gradient"""
         pass
 
-class Input:
+class Input(object):
     """Class representing fuzzy system input"""
     def __init__(self):
         self.mem_func = []
 
-class Rule:
+class Rule(object):
     """Class representing fuzzy system rule"""
 
     def __init__(self, params):
