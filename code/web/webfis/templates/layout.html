@@ -1,0 +1,54 @@
+<!doctype html>
+<title>Webfis</title>
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='blueprint/screen.css') }}">
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='blueprint/ie.css') }}">
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='jquery/css/smoothness/jquery-ui-1.8.9.custom.css') }}">
+<script type="text/javascript" src="{{url_for('static', filename='jquery/js/jquery-1.4.4.min.js') }}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='jquery/js/jquery-ui-1.8.9.custom.min.js') }}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='theming.js') }}"></script>
+
+<div class=container>
+	<div id="header" class="span-24 last">
+		<h1 id="webfis"><img src="{{ url_for('static', filename='logo.png') }}" alt="Webfis" id="logo"/></h1>
+	</div>
+	<hr/>
+    <div id="nav" class="span-6">
+        <div id="menu">
+            <h3><a href="#accountmenu">Account</a></h3>
+            <div>
+                <ul>
+                {% if 'username' in session %}
+                <li><a href="{{ url_for('logout') }}">log out</a></li>
+                <li><a href="{{ url_for('deluser') }}">delete account</a></li>
+                </ul>
+                Current user: {{ session['username'] }}
+                {% else %}
+                <li><a href="{{ url_for('newuser') }}">new account</a></li>
+                <li><a href="{{ url_for('login', next=url_for('index')) }}">log in</a></li>
+                </ul>
+                {% endif %}
+            </div>
+            <h3><a href="#datamenu">Models and data</a></h3>
+            <div>
+                {% block nav %}{% endblock %}
+            </div>
+        </div>
+	</div>
+	<div id="main" class="span-18 last">
+		{% block body %}{% endblock %}
+		{% if error %}
+		<div class=ui-widget>
+			<div class="ui-state-error ui-corner-all" style="padding: .7em; margin: .7em">
+				<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em"></span><strong>Error:</strong> {{ error }}</p>
+			</div>
+		</div>
+		{% endif %}
+		{% for message in get_flashed_messages() %}
+		<div class=ui-widget>
+			<div class="ui-state-highlight ui-corner-all" style="padding: .7em; margin: .7em">
+				<p><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em"></span>{{ message }}</p>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+</div>

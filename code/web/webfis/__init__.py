@@ -3,5 +3,6 @@
 from flask import Flask
 app = Flask(__name__)
 
-import webfis.hello
+import webfis.models
+import webfis.control
 

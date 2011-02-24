@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+{% block body %}
+<h2>Delete account</h2>
+  All stored information will be deleted. Are you sure you want to delete account?
+  <form action="{{ request.url }}" method=post>
+        <input type=submit name=delete value="Delete">
+        <input type=submit name=delete value="Cancel">
+  </form>
+{% endblock %}
