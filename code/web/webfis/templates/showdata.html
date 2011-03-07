@@ -1,0 +1,30 @@
+{% extends "index.html" %}
+{% block body %}
+<script type="text/javascript" src="{{ url_for('static', filename='DataTables/media/js/jquery.dataTables.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='showdata.js') }}"></script>
+
+<h2>Data set: {{ data.name }}</h2>
+
+<table id="datatable" class="ui-helper-reset">
+<THEAD class="ui-helper-reset">
+    <tr class="ui-helper-reset">
+        {% for i in range(data.data[0].shape[0] - 1) %}<th>Input {{ i }}</th>{% endfor %}
+        <th>Output</th>
+    </tr>
+</THEAD>
+<TFOOT class="ui-helper-reset">
+    <tr class="ui-helper-reset">
+        {% for i in range(data.data[0].shape[0] - 1) %}<th>Input {{ i }}</th>{% endfor %}
+        <th>Output</th>
+    </tr>
+</TFOOT>
+<TBODY class="ui-helper-reset">
+    {% for row in data.data %}
+    <tr class="ui-helper-reset">
+        {% for x in row %}<td>{{ x }}</td>{% endfor %}
+    </tr>
+    {% endfor %}
+</TBODY>
+</table>
+
+{% endblock %}

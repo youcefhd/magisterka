@@ -1,0 +1,29 @@
+{% extends "index.html" %}
+{% block body %}
+<h2>Add new data set</h2>
+<form action="{{ request.url }}" method=post enctype=multipart/form-data>
+<dl>
+    <dt>Name of data set:
+    <dd><input type=text name=fdataname></dd>
+    <table style"table-layout: fixed">
+        <tr>
+            <td style="width: 33%">
+                <dt>File:
+                <dd><input type=file name=file>
+            </td>
+            <td style="width: 33%">
+                <dt>File type:
+                <dd><select id=filetypeselect name=filetype>
+                    <option value=mat>MATLAB .mat file</option>
+                    <option value=csv>CSV file</option>
+                </select>
+            </td>
+            <td id="addoption">
+                <script type="text/javascript" src="{{ url_for('static', filename='newdata.js') }}"></script>
+            </td>
+        </tr>
+    </table>
+    <dd><input type=submit value=Add>
+</dl>
+</form>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "index.html" %}
+{% block body %}
+<h2>Add new model</h2>
+<form action="{{ request.url }}" method=post>
+<dl>
+    <dt>Name of model:
+    <dd><input type=text name=fmodelname></dd>
+    <dt>Defuzzification method:
+    <dd><select id=defuzzmethod name=defuzzmethod>
+        <option value=aver>average</option>
+        <option value=sum>sum</option>
+    </select>
+    <dd><input type=submit value=Add>
+</dl>
+</form>
+{% endblock %}

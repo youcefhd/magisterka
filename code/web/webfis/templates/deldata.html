@@ -1,0 +1,9 @@
+{% extends "index.html" %}
+{% block body %}
+<h2>Delete data set</h2>
+All stored information will be deleted. Are you sure you want to delete data set {{ data.name }}?
+  <form action="{{ request.url }}" method=post>
+        <input type=submit name=delete value="Delete">
+        <input type=submit name=delete value="Cancel">
+  </form>
+{% endblock %}

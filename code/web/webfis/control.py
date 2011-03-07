@@ -1,10 +1,13 @@
 #! /usr/bin/env python2
 
 from functools import wraps
-from flask import url_for, request, redirect, session, render_template, flash
+from flask import *
+from scipy.io import loadmat
 
 from webfis import app
 from webfis.models import *
+
+from pyfis.struct import *
 
 app.secret_key = '&8\x7f\xd2Wo\x80\xec\xa3EG\xa6\xa9\xde\x16\xed\x0cF\xfav\x08&]\xf5'
 
@@ -19,7 +22,8 @@ def login_required(f):
 @app.route('/')
 @login_required
 def index():
-    return render_template('index.html')
+    user = User.query.filter_by(username=session['username']).first()
+    return render_template('index.html', user=user)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -71,4 +75,85 @@ def deluser():
             flash('Account succesfully deleted')
         return redirect(url_for('index'))
     return render_template('deluser.html')
+
+@app.route('/newdata', methods=['GET', 'POST'])
+@login_required
+def newdata():
+    user = User.query.filter_by(username=session['username']).first()
+    error = None
+    if request.method == 'POST':
+        file = request.files['file']
+        if not file:
+            error = "File not specified!"
+        elif FData.query.filter_by(user_id=user.id, name=request.form['fdataname']).first():
+            error = "Data set with given name already exists!"
+        elif request.form['filetype'] == 'mat':
+            values = loadmat(file.stream)
+            if request.form['matvar'] not in values:
+                error = "No variable " + request.form['matvar'] + " in specified file!"
+            else:
+                fdata = FData(user.id, request.form['fdataname'], values[request.form['matvar']])
+                db.session.add(fdata)
+                db.session.commit()
+                flash('New data set succesfully added')
+                return redirect(url_for('showdata', data_id=fdata.id))
+        else:
+            error = "Not implemented yet!"
+    return render_template('newdata.html', user=user, error=error)
+
+@app.route('/showdata/<int:data_id>')
+@login_required
+def showdata(data_id):
+    user = User.query.filter_by(username=session['username']).first()
+    fdata = FData.query.filter_by(user_id=user.id, id=data_id).first()
+    return render_template('showdata.html', user=user, data=fdata)
+
+@app.route('/deldata/<int:data_id>', methods=['GET', 'POST'])
+@login_required
+def deldata(data_id):
+    user = User.query.filter_by(username=session['username']).first()
+    fdata = FData.query.filter_by(user_id=user.id, id=data_id).first()
+    if request.method == 'POST':
+        if request.form['delete'] == 'Delete':
+            db.session.delete(fdata)
+            db.session.commit()
+            flash('Data set succesfully deleted')
+        return redirect(url_for('index'))
+    return render_template('deldata.html', user=user, data=fdata)
+
+@app.route('/newmodel', methods=['GET', 'POST'])
+@login_required
+def newmodel():
+    user = User.query.filter_by(username=session['username']).first()
+    error = None
+    if request.method == 'POST':
+        if FModel.query.filter_by(user_id=user.id, name=request.form['fmodelname']).first():
+            error = "Model with given name already exists!"
+        else:
+            fmodel = FModel(user.id, request.form['fmodelname'], Fis(request.form['defuzzmethod']))
+            db.session.add(fmodel)
+            db.session.commit()
+            flash('New model succesfully added')
+            return redirect(url_for('showmodel', model_id=fmodel.id))
+    return render_template('newmodel.html', user=user, error=error)
+
+@app.route('/showmodel/<int:model_id>')
+@login_required
+def showmodel(model_id):
+    user = User.query.filter_by(username=session['username']).first()
+    fmodel = FModel.query.filter_by(user_id=user.id, id=model_id).first()
+    return render_template('showmodel.html', user=user, model=fmodel)
+
+@app.route('/delmodel/<int:model_id>', methods=['GET', 'POST'])
+@login_required
+def delmodel(model_id):
+    user = User.query.filter_by(username=session['username']).first()
+    fmodel = Fmodel.query.filter_by(user_id=user.id, id=model_id).first()
+    if request.method == 'POST':
+        if request.form['delete'] == 'Delete':
+            db.session.delete(fmodel)
+            db.session.commit()
+            flash('Model set succesfully deleted')
+        return redirect(url_for('index'))
+    return render_template('delmodel.html', user=user, model=fmodel)
 

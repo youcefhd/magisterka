@@ -1,3 +1,6 @@
 $(function() {
-    $( "#menu" ).accordion();
+    $( "#menu" ).accordion({
+        autoHeight: false,
+        navigation: true
+    });
 });

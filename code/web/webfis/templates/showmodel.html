@@ -1,0 +1,9 @@
+{% extends "index.html" %}
+{% block body %}
+<script type="text/javascript" src="{{ url_for('static', filename='showmodel.js') }}"></script>
+
+<h2>Model: {{ model.name }}</h2>
+
+Defuzzification method: {{ model.data.defuzzmethod }}
+
+{% endblock %}

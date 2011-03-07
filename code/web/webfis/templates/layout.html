@@ -6,6 +6,9 @@
 <script type="text/javascript" src="{{url_for('static', filename='jquery/js/jquery-1.4.4.min.js') }}"></script>
 <script type="text/javascript" src="{{url_for('static', filename='jquery/js/jquery-ui-1.8.9.custom.min.js') }}"></script>
 <script type="text/javascript" src="{{url_for('static', filename='theming.js') }}"></script>
+<script type=text/javascript>
+$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+</script>
 
 <div class=container>
 	<div id="header" class="span-24 last">
@@ -34,18 +37,20 @@
             </div>
         </div>
 	</div>
-	<div id="main" class="span-18 last">
-		{% block body %}{% endblock %}
+    <div id="main" class="span-18 last">
+        <div id="body" class="ui-corner-all ui-widget ui-widget-content" style="padding: .7em">
+            {% block body %}{% endblock %}
+        </div>
 		{% if error %}
 		<div class=ui-widget>
-			<div class="ui-state-error ui-corner-all" style="padding: .7em; margin: .7em">
+			<div class="ui-state-error ui-corner-all" style="padding: .7em; margin-top: .7em">
 				<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em"></span><strong>Error:</strong> {{ error }}</p>
 			</div>
 		</div>
 		{% endif %}
 		{% for message in get_flashed_messages() %}
 		<div class=ui-widget>
-			<div class="ui-state-highlight ui-corner-all" style="padding: .7em; margin: .7em">
+			<div class="ui-state-highlight ui-corner-all" style="padding: .7em; margin-top: .7em">
 				<p><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em"></span>{{ message }}</p>
 			</div>
 		</div>
