@@ -6,6 +6,7 @@ from scipy.io import loadmat
 
 from webfis import app
 from webfis.models import *
+from webfis.utils import *
 
 from pyfis.struct import *
 
@@ -156,4 +157,3 @@ def delmodel(model_id):
             flash('Model set succesfully deleted')
         return redirect(url_for('index'))
     return render_template('delmodel.html', user=user, model=fmodel)
-

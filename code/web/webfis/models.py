@@ -33,7 +33,7 @@ class FModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80))
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
-    data = db.Column(db.PickleType(mutable=False))
+    data = db.Column(db.PickleType)
 
     def __init__(self, user_id, name, fis):
         self.user_id = user_id

@@ -44,7 +44,6 @@ class Fis(object):
         
         return y
 
-
 class MemFunc(object):
     """Abstract class representing membership function"""
 
@@ -78,8 +77,7 @@ class Rule(object):
         for j in xrange(1, len(self.params)):
             y += self.params[j]*x[j-1]
         return y
-
-
+    
 class FISException(Exception):
     def __init__(self, value):
         self.value = value
