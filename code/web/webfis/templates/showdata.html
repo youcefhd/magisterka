@@ -8,13 +8,13 @@
 <table id="datatable" class="ui-helper-reset">
 <THEAD class="ui-helper-reset">
     <tr class="ui-helper-reset">
-        {% for i in range(data.data[0].shape[0] - 1) %}<th>Input {{ i }}</th>{% endfor %}
+        {% for i in range(data.data[0].shape[0] - 1) %}<th>Input {{ i+1 }}</th>{% endfor %}
         <th>Output</th>
     </tr>
 </THEAD>
 <TFOOT class="ui-helper-reset">
     <tr class="ui-helper-reset">
-        {% for i in range(data.data[0].shape[0] - 1) %}<th>Input {{ i }}</th>{% endfor %}
+        {% for i in range(data.data[0].shape[0] - 1) %}<th>Input {{ i+1 }}</th>{% endfor %}
         <th>Output</th>
     </tr>
 </TFOOT>

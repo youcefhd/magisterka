@@ -4,7 +4,7 @@
 <div id="navtree">
 <table style="table-layout:fixed; width: 100%">
 <thead>
-    <tr><th>Models:</th><th style="width: 20%"><small><a href="{{ url_for('newmodel') }}"><span class="addbutton">Add model</span></a></small></th></tr>
+    <tr><th>Models:</th><th style="width: 15%"><small><a href="{{ url_for('newmodel') }}"><span class="addbutton">Add model</span></a></small></th></tr>
 </thead>
 <tbody>
     {% for fmodel in user.fmodels %}
@@ -15,7 +15,7 @@
 </table>
 <table style="table-layout:fixed; width: 100%">
 <thead>
-    <tr><th>Data sets:</th><th style="width: 20%"><small><a href="{{ url_for('newdata') }}"><span class="addbutton">Add data set</span></a></small></th></tr>
+    <tr><th>Data sets:</th><th style="width: 15%"><small><a href="{{ url_for('newdata') }}"><span class="addbutton">Add data set</span></a></small></th></tr>
 </thead>
 <tbody>
     {% for fdata in user.fdatas %}

@@ -131,7 +131,8 @@ def newmodel():
         if FModel.query.filter_by(user_id=user.id, name=request.form['fmodelname']).first():
             error = "Model with given name already exists!"
         else:
-            fmodel = FModel(user.id, request.form['fmodelname'], Fis(request.form['defuzzmethod']))
+            fmodel = FModel(user.id, request.form['fmodelname'], \
+                Fis(defuzzmethod = request.form['defuzzmethod'], funtype = request.form['funtype']))
             db.session.add(fmodel)
             db.session.commit()
             flash('New model succesfully added')
@@ -149,7 +150,7 @@ def showmodel(model_id):
 @login_required
 def delmodel(model_id):
     user = User.query.filter_by(username=session['username']).first()
-    fmodel = Fmodel.query.filter_by(user_id=user.id, id=model_id).first()
+    fmodel = FModel.query.filter_by(user_id=user.id, id=model_id).first()
     if request.method == 'POST':
         if request.form['delete'] == 'Delete':
             db.session.delete(fmodel)
@@ -157,3 +158,21 @@ def delmodel(model_id):
             flash('Model set succesfully deleted')
         return redirect(url_for('index'))
     return render_template('delmodel.html', user=user, model=fmodel)
+
+@app.route('/getfis/<int:model_id>')
+@login_required
+def getfis(model_id):
+    user = User.query.filter_by(username=session['username']).first()
+    fmodel = FModel.query.filter_by(user_id=user.id, id=model_id).first()
+    return fis_to_json(fmodel.data)
+    
+app.route('/updatefis/<int:model_id>', methods=['GET', 'POST'])
+@login_required
+def updatefis(model_id):
+    user = User.query.filter_by(username=session['username']).first()
+    fmodel = FModel.query.filter_by(user_id=user.id, id=model_id).first()
+    if request.method == 'POST':
+        fmodel.data = json_to_fis(request.form['fis'])
+        db.session.commit()
+        return make_response('OK', 200)
+    abort(500)

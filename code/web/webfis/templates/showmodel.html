@@ -1,9 +1,37 @@
 {% extends "index.html" %}
 {% block body %}
+<script type=text/javascript>
+$MODEL_ID = {{ model.id|tojson|safe }};
+</script>
 <script type="text/javascript" src="{{ url_for('static', filename='showmodel.js') }}"></script>
 
 <h2>Model: {{ model.name }}</h2>
 
-Defuzzification method: {{ model.data.defuzzmethod }}
+Defuzzification method: <select id=defuzzmethod name="defuzzmethod">
+    <option value="aver">average</option>
+    <option value="sum">sum</option>
+</select>
+&nbsp;
+Function type: <select id=funtype name="funtype">
+    <option value="lin">linear</option>
+    <option value="const">constant</option>
+</select>
+&nbsp;
+<small><span id=save>Save</span></small>
+&nbsp;
+<small><span id=train>Train</span></small>
+
+<div id=modeltabs>
+    <ul>
+        <li><a href=#inputs>Inputs</a></li>
+        <li><a href=#rules>Rules</a></li>
+    </ul>
+    <div id=inputs>
+        
+    </div>
+    <div id=rules>
+        <table></table>
+    </div>
+</div>
 
 {% endblock %}
