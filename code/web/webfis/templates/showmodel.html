@@ -17,9 +17,9 @@ Function type: <select id=funtype name="funtype">
     <option value="const">constant</option>
 </select>
 &nbsp;
-<small><span id=save>Save</span></small>
+<span id=save>Save</span>
 &nbsp;
-<small><span id=train>Train</span></small>
+<span id=train>Train</span>
 
 <div id=modeltabs>
     <ul>
@@ -27,10 +27,39 @@ Function type: <select id=funtype name="funtype">
         <li><a href=#rules>Rules</a></li>
     </ul>
     <div id=inputs>
-        
+        <span id=addinput>Add input</span>
+        <div>
+            
+        </div>
     </div>
     <div id=rules>
+        <span id=addrule>Add rule</span>
         <table></table>
+    </div>
+    <div id="delinputdialog">
+	<span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>Are you sure, you want to delete input?
+    </div>
+    <div id="addmemfuncdialog" title="Add membership function">
+	<form>
+            <dt>Type of membership function:</dt>
+            <dd><select name="type" id="memfuncselect">
+                <option value="TriangleMemFunc">Triangle</option>
+                <option value="TrapezoidMemFunc">Trapezoid</option>
+                <option value="BellMemFunc">Generalized Bell</option>
+            </select></dd>
+            <dt>Parameters:</dt>
+            <dd id="memfuncparams"></dd>
+        </form>
+    </div>
+    <div id="addruledialog" title="Add new rule">
+	<p id="ruletext"></p>
+        <table><tr>
+        <td>Input:</td>
+        <td><select id="ruleinputselect"></select><td>
+        <td> Membership function:</td>
+        <td><select id="rulememfuncselect"></select></td>
+        <td><span id="addrulepartbutton">Add</span></td>
+        </tr></table>
     </div>
 </div>
 

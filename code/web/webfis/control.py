@@ -166,7 +166,7 @@ def getfis(model_id):
     fmodel = FModel.query.filter_by(user_id=user.id, id=model_id).first()
     return fis_to_json(fmodel.data)
     
-app.route('/updatefis/<int:model_id>', methods=['GET', 'POST'])
+@app.route('/updatefis/<int:model_id>', methods=['GET', 'POST'])
 @login_required
 def updatefis(model_id):
     user = User.query.filter_by(username=session['username']).first()
