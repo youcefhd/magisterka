@@ -117,7 +117,15 @@ $(function() {
         width: 500,
 	buttons: {
             "Add rule": function() {
-                
+                var params = new Array();
+                $( "#ruleparams input" ).each(function(){
+                    params.push(parseFloat($(this).val()));
+                });
+                var rule = {
+                    'inputs': $(this).data('inputs'),
+                    'params': params
+                }
+                fis['rules'].push(rule);
                 redraw();
                 $( this ).dialog( "close" );
             },
@@ -187,6 +195,17 @@ function addRule(){
     for(var i=1; i<=fis['inputs'].length; i++){
         $('#ruleinputselect').append('<option>'+i+'</option>');
     }
+    
+    $('#ruleparams').empty();
+    $('#ruleparams').append('<tr/>');
+    var j = 1;
+    if(fis['funtype'] == 'lin'){
+        j = fis['inputs'].length + 1;
+    }
+    for(var i=1; i<=j; i++){
+        $('#ruleparams tr').append('<td><input type="text"></td>');
+    }
+    
     $('#ruleinputselect').change();
     $("#addruledialog").data('inputs', new Array()).dialog('open');
 }
