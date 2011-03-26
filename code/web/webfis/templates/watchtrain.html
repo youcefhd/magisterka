@@ -1,0 +1,11 @@
+{% extends "index.html" %}
+{% block body %}
+<script type="text/javascript" src="{{ url_for('static', filename='flot/jquery.flot.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='watchtrain.js') }}"></script>
+<h2>Training model...</h2>
+
+<div id="trainingplot" style="width: 700px; height: 300px;"></div>
+
+<div id="desc"></div>
+
+{% endblock %}

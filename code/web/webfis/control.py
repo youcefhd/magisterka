@@ -10,6 +10,8 @@ from webfis.utils import *
 
 from pyfis.struct import *
 
+import json
+
 app.secret_key = '&8\x7f\xd2Wo\x80\xec\xa3EG\xa6\xa9\xde\x16\xed\x0cF\xfav\x08&]\xf5'
 
 def login_required(f):
@@ -176,3 +178,35 @@ def updatefis(model_id):
         db.session.commit()
         return make_response('OK', 200)
     abort(500)
+    
+@app.route('/starttrain', methods=['GET', 'POST'])
+@login_required
+def starttrain():
+    user = User.query.filter_by(username=session['username']).first()
+    if request.method == 'POST':
+        fmodel = FModel.query.filter_by(user_id=user.id, id=request.form['model_id']).first()
+        fdata = FData.query.filter_by(user_id=user.id, id=request.form['data_id']).first()
+        fis = fmodel.data
+        train_data = fdata.data
+        epochs = int(request.form['epochs'])
+        n = int(request.form['n'])
+        num_of_backprops = int(request.form['num_of_backprops'])
+        method = request.form['method']
+        
+        trainer = Trainer(fis, train_data, epochs, n, num_of_backprops, method)
+        trainer.start()
+        
+        return redirect(url_for('watchtrain'))
+    return render_template('starttrain.html', user=user)
+    
+@app.route('/watchtrain')
+@login_required
+def watchtrain():
+    user = User.query.filter_by(username=session['username']).first()
+    return render_template('watchtrain.html', user=user)
+    
+@app.route('/gettrainerror')
+@login_required
+def gettrainerror():
+    error = get_error()
+    return json.dumps(error)

@@ -1,0 +1,3 @@
+Flask
+Flask-Script
+celery>=2.2.0rc5

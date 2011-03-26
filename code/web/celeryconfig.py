@@ -1,0 +1,12 @@
+BROKER_HOST = "myhost"
+BROKER_PORT = 5672
+BROKER_USER = "webfis"
+BROKER_PASSWORD = "password"
+BROKER_VHOST = "webfishost"
+
+CELERY_RESULT_BACKEND = "amqp"
+
+CELERY_IMPORTS = ("webfis.utils", )
+
+CELERY_DISABLE_RATE_LIMITS = False
+

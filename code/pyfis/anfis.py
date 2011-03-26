@@ -34,8 +34,7 @@ def train(fis, train_data, epochs=50, n=1, num_of_backprops=3, method="sd"):
                 print ".",
         print("")
             
-def least_squares(fis, train_data):
-    
+def least_squares(fis, train_data):    
     # matrix initialization
     if fis.funtype == "const":
         # matrix size pxr

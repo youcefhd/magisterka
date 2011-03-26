@@ -1,0 +1,32 @@
+{% extends "index.html" %}
+{% block body %}
+<h2>Train model</h2>
+<form action="{{ request.url }}" method=post>
+<dl>
+    <dt>Model:
+    <dd><select name=model_id>
+        {% for model in user.fmodels %}
+        <option value={{ model.id }}>{{ model.name }}</option>
+        {% endfor %}
+    </select>
+    <dt>Data set:
+    <dd><select name=data_id>
+        {% for data in user.fdatas %}
+        <option value={{ data.id }}>{{ data.name }}</option>
+        {% endfor %}
+    </select>
+    <dt>Number of epochs:
+    <dd><input type=text name=epochs value=50></input>
+    <dt>n:
+    <dd><input type=text name=n value=1></input>
+    <dt>Number of backpropagations per epoch:
+    <dd><input type=text name=num_of_backprops value=3></input>
+    <dt>Method:</dt>
+    <dd><select name=method>
+        <option value=sd>steepest descent</option>
+        <option value=lm>Levenberg-Marqurdt</option>
+    </select>
+    <dd><input type=submit value=Train>
+</dl>
+</form>
+{% endblock %}
