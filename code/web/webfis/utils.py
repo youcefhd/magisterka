@@ -10,6 +10,8 @@ from multiprocessing import Process
 from kombu.connection import BrokerConnection
 from kombu.compat import Publisher, Consumer
 
+from models import *
+
 def fis_to_json(fis):
     j = {}
     j['defuzzmethod'] = fis.defuzzmethod
@@ -61,20 +63,23 @@ def json_to_fis(j):
     return fis
 
 class Trainer(Process):
-    def __init__(self, fis, train_data, epochs=50, n=1, num_of_backprops=3, method="sd"):
+    def __init__(self, fis, train_data, epochs=50, n=1, num_of_backprops=3, method="sd", num=0):
         self.fis = fis
         self.train_data = train_data
         self.epochs = epochs
         self.n = n
         self. num_of_backprops = num_of_backprops
         self.method = method
+        self.num = num
         Process.__init__(self)
     
     def run(self):
         seterr(divide = 'raise')
         for i in xrange(self.epochs):
+            if check_end(self.num):
+                break # TODO implement ending
             error = calc_error(self.fis, self.train_data)
-            send_error(error)
+            send_error(self.num, error)
             least_squares(self.fis, self.train_data)
             
             if self.method == "sd":
@@ -96,9 +101,9 @@ class Trainer(Process):
                     if new_error > error:
                         l = l/10
                         
-        send_error("end")
+        send_error(self.num, "end")
     
-def send_error(error):
+def send_error(num, error):
     connection = BrokerConnection(hostname = 'myhost',
                                   userid = 'webfis',
                                   password = 'password',
@@ -106,34 +111,77 @@ def send_error(error):
                                   port = 5672)
     publisher = Publisher(connection=connection,
                           exchange="error",
-                          routing_key="error",
+                          routing_key=str(num),
                           exchange_type="direct")
 
     publisher.send(error)
-    print("Put from trainer: " + str(error))
     publisher.close()
     connection.release()
     
-def get_error():
+def get_error(num):
     connection = BrokerConnection(hostname = 'myhost',
                                   userid = 'webfis',
                                   password = 'password',
                                   virtual_host = 'webfishost',
                                   port = 5672)
     consumer = Consumer(connection=connection,
-                        queue="error",
+                        queue=str(num),
                         exchange="error",
-                        routing_key="error",
+                        routing_key=str(num),
                         exchange_type="direct")
     
     message = consumer.fetch()
     if message:
         error = message.payload
         message.ack()
-        print("Get error: " + str(error))
+        print("geterror: " + str(error))
     else:
         error = "wait"
         
     consumer.close()
     connection.release()
     return error
+
+def send_end(num):
+    connection = BrokerConnection(hostname = 'myhost',
+                                  userid = 'webfis',
+                                  password = 'password',
+                                  virtual_host = 'webfishost',
+                                  port = 5672)
+    publisher = Publisher(connection=connection,
+                          exchange="end",
+                          routing_key=str(num),
+                          exchange_type="direct")
+    
+    publisher.send("end")
+    publisher.close()
+    connection.release()
+    
+def check_end(num):
+    connection = BrokerConnection(hostname = 'myhost',
+                                  userid = 'webfis',
+                                  password = 'password',
+                                  virtual_host = 'webfishost',
+                                  port = 5672)
+    consumer = Consumer(connection=connection,
+                        queue=str(num),
+                        exchange="end",
+                        routing_key=str(num),
+                        exchange_type="direct")
+    
+    message = consumer.fetch()
+    if message and message.payload == "end":
+        end = True
+    else:
+        end = False
+        
+    consumer.close()
+    connection.release()
+    return end
+
+def get_next_number():
+    seq = TrainSequence.query.first()
+    num = seq.num
+    seq.num = num+1
+    db.session.commit()
+    return num

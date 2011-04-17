@@ -193,20 +193,27 @@ def starttrain():
         num_of_backprops = int(request.form['num_of_backprops'])
         method = request.form['method']
         
-        trainer = Trainer(fis, train_data, epochs, n, num_of_backprops, method)
+        num = get_next_number()
+        trainer = Trainer(fis, train_data, epochs, n, num_of_backprops, method, num)
         trainer.start()
         
-        return redirect(url_for('watchtrain'))
+        return redirect(url_for('watchtrain', num=num))
     return render_template('starttrain.html', user=user)
     
-@app.route('/watchtrain')
+@app.route('/watchtrain/<int:num>')
 @login_required
-def watchtrain():
+def watchtrain(num):
     user = User.query.filter_by(username=session['username']).first()
-    return render_template('watchtrain.html', user=user)
+    return render_template('watchtrain.html', user=user, num=num)
     
-@app.route('/gettrainerror')
+@app.route('/gettrainerror/<int:num>')
 @login_required
-def gettrainerror():
-    error = get_error()
+def gettrainerror(num):
+    error = get_error(num)
     return json.dumps(error)
+    
+@app.route('/endtrain/<int:num>')
+@login_required
+def endtrain(num):
+    send_end(num)
+    return make_response('OK', 200)

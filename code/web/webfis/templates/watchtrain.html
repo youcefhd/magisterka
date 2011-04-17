@@ -1,8 +1,14 @@
 {% extends "index.html" %}
 {% block body %}
+<script type=text/javascript>
+$TRAIN_ID = {{ num|tojson|safe }};
+</script>
 <script type="text/javascript" src="{{ url_for('static', filename='flot/jquery.flot.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='watchtrain.js') }}"></script>
 <h2>Training model...</h2>
+
+&nbsp; Training error: <span id=error></span>
+&nbsp; <span id=stop>Stop training</span>
 
 <div id="trainingplot" style="width: 700px; height: 300px;"></div>
 

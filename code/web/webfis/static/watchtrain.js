@@ -1,4 +1,14 @@
 $(function(){
+    $("#stop").button({
+        icons: {primary: "ui-icon-check"},
+        text: true
+    }).click(function(){
+        $.ajax({
+            url: $SCRIPT_ROOT + '/endtrain/' + $TRAIN_ID,
+            method: 'GET'
+        });
+    });
+    
     var options = {
         lines: { show: true },
         points: { show: true },
@@ -17,15 +27,19 @@ $(function(){
             if(d != "wait" && d != "end"){
                 iteration += 1;
                 data[0].push([iteration, d]);
+                $("#error").empty().append(d);
                 $.plot(placeholder, data, options);
             }
             if(d != "end"){
                 setTimeout(fetchData, 200);
             }
+            else{
+                $("#desc").empty().append("Training finished");
+            }
         }
         
         $.ajax({
-            url: $SCRIPT_ROOT + '/gettrainerror',
+            url: $SCRIPT_ROOT + '/gettrainerror/' + $TRAIN_ID,
             cache: false,
             method: 'GET',
             dataType: 'json',

@@ -52,3 +52,9 @@ class FData(db.Model):
         self.name = name
         self.data = data
 
+class TrainSequence(db.Model):
+    __tablename__ = "sequence"
+    num = db.Column(db.Integer, primary_key=True)
+    
+    def __init__(self, num):
+        self.num = num
