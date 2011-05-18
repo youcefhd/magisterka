@@ -19,8 +19,11 @@ Function type: <select id=funtype name="funtype">
 &nbsp;
 <span id=save>Save</span>
 &nbsp;
-<a href="{{ url_for('starttrain') }}"><span id=train>Train</span></a>
-
+<a href="{{ url_for('starttrain', model_id=model.id) }}"><span id=train>Train</span></a>
+&nbsp;
+<a href="{{ url_for('startevotrain', model_id=model.id) }}"><span id=evotrain>Evo Train</span></a>
+<br />
+<span id=test style="margin-bottom: 0.4em; margin-top: 0.4em; margin-left: 580px;">Test</span>
 <div id=modeltabs>
     <ul>
         <li><a href=#inputs>Inputs</a></li>
@@ -62,6 +65,19 @@ Function type: <select id=funtype name="funtype">
         </tr></table>
         <p>THAN Output params are:</p>
         <table id="ruleparams"></table>
+    </div>
+    <div id="testdialog" title="Test">
+        <form>
+            <dt>Data set:</dt>
+            <dd><select name="dataset" id="testselect">
+            {% for data in user.fdatas %}
+                <option value="{{ data.id }}">{{ data.name }}</option>
+            {% endfor %}
+            </select></dd>
+            <div id="testoutput">
+                
+            </div>
+        </form>
     </div>
 </div>
 

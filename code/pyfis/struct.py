@@ -2,6 +2,7 @@
 # struct.py
 # coding: utf-8
 from numpy import *
+from time import time
 
 """ Module containing basic classes representing Takagi-Sugeno fuzzy
 interference system. """
@@ -39,8 +40,9 @@ class Fis(object):
         for k in xrange(len(yi)):
                 y += w[k]*yi[k]
         if self.defuzzmethod == "aver":
-            if sum(w)!=0:
-                y /= sum(w)
+            s = sum(w)
+            if s!=0:
+                y /= s
         
         return y
 
@@ -69,7 +71,7 @@ class Rule(object):
     def __init__(self, params):
         self.params = array(params, dtype='f8') # params of output, 1 if output is constant, 2*in+1 if output is
             # linearly dependent on inputs
-        self.inputs = [] # tuple containing no of input and no of mem_func
+        self.inputs = [] # tuples containing no of input and no of mem_func
 
 
     def evalout(self, x):

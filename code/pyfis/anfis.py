@@ -2,9 +2,10 @@
 # anfis.py
 # coding: utf-8
 from numpy import *
-from numpy.linalg import inv
+from numpy.linalg import inv, lstsq
 from scipy.linalg import pinv2
 from struct import *
+from time import time
 
 def train(fis, train_data, epochs=50, n=1, num_of_backprops=3, method="sd"):
     for i in xrange(epochs):
@@ -17,7 +18,7 @@ def train(fis, train_data, epochs=50, n=1, num_of_backprops=3, method="sd"):
                 for data in train_data:
                     dE = backpropagate(fis, data)
                     steepest_descent(fis, dE, n)
-                print".",
+                print(".")
         if method == "lm":
             error = calc_error(fis, train_data)
             l = 1
@@ -31,10 +32,10 @@ def train(fis, train_data, epochs=50, n=1, num_of_backprops=3, method="sd"):
                     l *= 10
                 if new_error > error:
                     l = l/10
-                print ".",
+                print(".")
         print("")
             
-def least_squares(fis, train_data):    
+def least_squares(fis, train_data):
     # matrix initialization
     if fis.funtype == "const":
         # matrix size pxr
@@ -47,8 +48,8 @@ def least_squares(fis, train_data):
     
     for i in xrange(len(train_data)):
         # membership functions
-        mi = array([[mf.eval(train_data[i][j]) for mf in fis.inputs[j].mem_func] \
-                for j in xrange(n)])
+        mi = [[mf.eval(train_data[i][j]) for mf in fis.inputs[j].mem_func] \
+                for j in xrange(n)]
         
         # activation levels
         w = empty(len(fis.rules))
@@ -57,13 +58,13 @@ def least_squares(fis, train_data):
             w[k] = mi[inps[0][0]][inps[0][1]]
             for j in xrange(1, len(inps)):
                 w[k] *= mi[inps[j][0]][inps[j][1]]
-                
+        
         # A matrix setting
         if fis.funtype == "const":
             if fis.defuzzmethod == "prod":
-                A[i] = array(w)
+                A[i] = w
             else:
-                A[i] = array([w[k]/sum(w) for k in xrange(len(fis.rules))])
+                A[i] = [w[k]/sum(w) for k in xrange(len(fis.rules))]
         else:
             for k in xrange(len(fis.rules)):
                 if fis.defuzzmethod == "prod":
@@ -77,10 +78,13 @@ def least_squares(fis, train_data):
                         A[i][k*(n+1)+j+1] = w[k]*train_data[i][j]/sum(w)
         d[i] = train_data[i][-1]
     
-    Ap = pinv2(A)
-    p = mat(Ap)*mat(d).transpose()
+    #print(A)
+    #print(d)
+    #Ap = pinv2(A)
+    #p = mat(Ap)*mat(d).transpose()
     
-    pm = p.getA1()
+    #pm = p.getA1()
+    pm = lstsq(array(A), array(d))[0]
     for i in xrange(len(fis.rules)):
         for j in xrange(len(fis.rules[i].params)):
             fis.rules[i].params[j] = pm[i*(n+1)+j]
@@ -88,11 +92,11 @@ def least_squares(fis, train_data):
 def backpropagate(fis, data):    
     
     # membership functions
-    mi = array([[mf.eval(data[i]) for mf in fis.inputs[i].mem_func] \
-            for i in xrange(len(data)-1)])
+    mi = [[mf.eval(data[i]) for mf in fis.inputs[i].mem_func] \
+            for i in xrange(len(data)-1)]
     # membership functions gradient
-    dmi = array([[mf.grad(data[i]) for mf in fis.inputs[i].mem_func] \
-            for i in xrange(len(data)-1)])
+    dmi = [[mf.grad(data[i]) for mf in fis.inputs[i].mem_func] \
+            for i in xrange(len(data)-1)]
     # activation levels
     w = empty(len(fis.rules))
     for r in xrange(len(fis.rules)):

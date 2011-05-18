@@ -4,11 +4,12 @@
 <form action="{{ request.url }}" method=post>
 <dl>
     <dt>Model:
-    <dd><select name=model_id>
+    <dd>
         {% for model in user.fmodels %}
-        <option value={{ model.id }}>{{ model.name }}</option>
+        {% if model.id == model_id %}
+            {{ model.name }}
+        {% endif %}
         {% endfor %}
-    </select>
     <dt>Data set:
     <dd><select name=data_id>
         {% for data in user.fdatas %}
@@ -18,7 +19,7 @@
     <dt>Number of epochs:
     <dd><input type=text name=epochs value=50></input>
     <dt>n:
-    <dd><input type=text name=n value=1></input>
+    <dd><input type=text name=n value=0.01></input>
     <dt>Number of backpropagations per epoch:
     <dd><input type=text name=num_of_backprops value=3></input>
     <dt>Method:</dt>

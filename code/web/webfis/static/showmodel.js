@@ -18,6 +18,16 @@ $(function() {
         icons: {primary: "ui-icon-lightbulb"},
         text: true
     });
+    $("#evotrain").button({
+        icons: {primary: "ui-icon-lightbulb"},
+        text: true
+    });
+    $("#test").button({
+        icons: {primary: "ui-icon-help"},
+        text: true
+    }).click(function(){
+        $("#testdialog").dialog("open");
+    });
     $("#addinput").button({
         icons: {primary: "ui-icon-plus"},
         text: true
@@ -45,6 +55,35 @@ $(function() {
 		$( this ).dialog( "close" );
 	    }
 	}
+    });
+    $( "#testdialog" ).dialog({
+        autoOpen: false,
+        resizible: false,
+        modal: true,
+        buttons: {
+            "Test": function(){
+                $.ajax({
+                    type: 'GET',
+                    url: $SCRIPT_ROOT + '/test/' + $MODEL_ID + '/' + $('#testselect').val(),
+                    success: function(data) {
+                        $('#testoutput').append('Square error: ' + data);
+                    },
+                    error: function() {
+                        // add flash message
+                        var flash = $('<div class=ui-widget />');
+                        $('#main').append(flash);
+                        var content = $('<div class="ui-state-error ui-corner-all" style="padding: .7em; margin-top: .7em" />');
+                        flash.append(content);
+                        content.append('<span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em"></span>');
+                        content.append('<strong>Error:</strong> Test failed');
+                    }
+                });
+            },
+            "OK": function() {
+                $('#testoutput').empty();
+                $( this ).dialog( "close" );
+            }
+        }
     });
     $( "#memfuncselect" ).change(function(){
         $("#memfuncparams").empty();
@@ -127,9 +166,11 @@ $(function() {
                 }
                 fis['rules'].push(rule);
                 redraw();
+                $('#ruletext').empty()
                 $( this ).dialog( "close" );
             },
             Cancel: function() {
+                $('#ruletext').empty()
 		$( this ).dialog( "close" );
 	    }
 	}

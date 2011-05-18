@@ -9,6 +9,7 @@ from webfis.models import *
 from webfis.utils import *
 
 from pyfis.struct import *
+from pyfis.anfis import calc_error
 
 import json
 
@@ -179,26 +180,27 @@ def updatefis(model_id):
         return make_response('OK', 200)
     abort(500)
     
-@app.route('/starttrain', methods=['GET', 'POST'])
+@app.route('/starttrain/<int:model_id>', methods=['GET', 'POST'])
 @login_required
-def starttrain():
+def starttrain(model_id):
     user = User.query.filter_by(username=session['username']).first()
     if request.method == 'POST':
-        fmodel = FModel.query.filter_by(user_id=user.id, id=request.form['model_id']).first()
+        fmodel = FModel.query.filter_by(user_id=user.id, id=model_id).first()
         fdata = FData.query.filter_by(user_id=user.id, id=request.form['data_id']).first()
         fis = fmodel.data
         train_data = fdata.data
         epochs = int(request.form['epochs'])
-        n = int(request.form['n'])
+        n = float(request.form['n'])
         num_of_backprops = int(request.form['num_of_backprops'])
         method = request.form['method']
         
         num = get_next_number()
-        trainer = Trainer(fis, train_data, epochs, n, num_of_backprops, method, num)
+        trainer = Trainer(user.id, fmodel.id, fis, train_data, epochs, n, num_of_backprops, method, num)
         trainer.start()
         
         return redirect(url_for('watchtrain', num=num))
-    return render_template('starttrain.html', user=user)
+    return render_template('starttrain.html', user=user, model_id=model_id)
+
     
 @app.route('/watchtrain/<int:num>')
 @login_required
@@ -217,3 +219,45 @@ def gettrainerror(num):
 def endtrain(num):
     send_end(num)
     return make_response('OK', 200)
+    
+@app.route('/startevotrain/<int:model_id>', methods=['GET', 'POST'])
+@login_required
+def startevotrain(model_id):
+    user = User.query.filter_by(username=session['username']).first()
+    if request.method == 'POST':
+        fmodel = FModel.query.filter_by(user_id=user.id, id=model_id).first()
+        fdata = FData.query.filter_by(user_id=user.id, id=request.form['data_id']).first()
+        fis = fmodel.data
+        train_data = fdata.data
+        params_min = json.loads(request.form['params_min'])
+        params_max = json.loads(request.form['params_max'])
+        pop_size = int(request.form['pop_size'])
+        crossing_size = int(request.form['crossing_size'])
+        fis_count = int(request.form['fis_count'])
+        lmax = int(request.form['lmax'])
+        strategy = request.form['strategy']
+        mut_prob = float(request.form['mut_prob'])
+        
+        num = get_next_number()
+        trainer = EvoTrainer(user.id, fmodel.id, fis, train_data, params_min, params_max, pop_size, crossing_size, mut_prob, fis_count, lmax, strategy, num)
+        print("before start")
+        trainer.start()
+        print("after start")
+        
+        return redirect(url_for('watchevotrain', num=num))
+    return render_template('startevotrain.html', user=user, model_id=model_id)
+    
+@app.route('/watchevotrain/<int:num>')
+@login_required
+def watchevotrain(num):
+    user = User.query.filter_by(username=session['username']).first()
+    return render_template('watchevotrain.html', user=user, num=num)
+    
+@app.route('/test/<int:model_id>/<int:data_id>')
+@login_required
+def test(model_id, data_id):
+    user = User.query.filter_by(username=session['username']).first()
+    fmodel = FModel.query.filter_by(user_id=user.id, id=model_id).first()
+    fdata = FData.query.filter_by(user_id=user.id, id=data_id).first()
+    return json.dumps(calc_error(fmodel.data, fdata.data))
+    
