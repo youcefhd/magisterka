@@ -1,0 +1,8 @@
+\beamer@endinputifotherversion {3.10pt}
+\beamer@sectionintoc {2}{Modelowanie rozmyte}{3}{0}{1}
+\beamer@sectionintoc {3}{Rozmyte sieci neuronowe}{7}{0}{2}
+\beamer@sectionintoc {4}{Algorytmy ewolucyjne w strojeniu modeli rozmytych}{17}{0}{3}
+\beamer@sectionintoc {5}{Implementacja}{23}{0}{4}
+\beamer@subsectionintoc {5}{1}{Biblioteka}{24}{0}{4}
+\beamer@subsectionintoc {5}{2}{Architektura}{26}{0}{4}
+\beamer@sectionintoc {6}{Demo}{28}{0}{5}

@@ -1,0 +1,41 @@
+{% extends "index.html" %}
+{% block body %}
+<h2>Train model</h2>
+<form action="{{ request.url }}" method=post>
+<dl>
+    <dt>Model:
+    <dd>
+        {% for model in user.fmodels %}
+        {% if model.id == model_id %}
+            {{ model.name }}
+        {% endif %}
+        {% endfor %}
+    <dt>Data set:
+    <dd><select name=data_id>
+        {% for data in user.fdatas %}
+        <option value={{ data.id }}>{{ data.name }}</option>
+        {% endfor %}
+    </select>
+    <dt>Minimal membership function parameters:
+    <dd><input type=text name=params_min value="[0.5, 0.2, -10]"></input>
+    <dt>Maximal membership function parameters:
+    <dd><input type=text name=params_max value="[5, 8, 10]"></input>
+    <dt>Population size:
+    <dd><input type=text name=pop_size value=100></input>
+    <dt>Number of crossing objects:
+    <dd><input type=text name=crossing_size value=80></input>
+    <dt>Number of initial models objects in initial population:
+    <dd><input type=text name=fis_count value=10></input>
+    <dt>Number generations:
+    <dd><input type=text name=lmax value=100></input>
+    <dt>Mutation probability:
+    <dd><input type=text name=mut_prob value="0.1"></input>
+    <dt>Strategy:</dt>
+    <dd><select name=strategy>
+        <option value="m+l">&mu;, &lambda;</option>
+        <option value="ml">&mu; + &lambda;</option>
+    </select>
+    <dd><input type=submit value=Train>
+</dl>
+</form>
+{% endblock %}
